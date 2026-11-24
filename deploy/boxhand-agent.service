@@ -1,0 +1,17 @@
+[Unit]
+Description=Boxhand-Agent (remote access to tsboxd)
+Documentation=https://github.com/rif223/boxhand-agent
+After=tsboxd.service
+Wants=tsboxd.service
+
+[Service]
+User=@USER@
+Group=@USER@
+SupplementaryGroups=tsbox
+ExecStart=/usr/local/bin/boxhand-agent --listen 0.0.0.0:9001 --host unix:///run/tsbox/tsboxd.sock --data @HOME@/.config/boxhand-agent
+# Until "boxhand-agent init" ran there is no token: keep trying.
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
