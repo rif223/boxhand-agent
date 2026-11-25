@@ -190,6 +190,7 @@ type runRequest struct {
 	Params   string   `json:"params"`
 	Timeout  string   `json:"timeout"`
 	Storage  string   `json:"storage"`
+	Driver   string   `json:"driver"` // "" = the daemon's default
 	RemoveOn bool     `json:"rm"`
 }
 
@@ -285,6 +286,14 @@ func (s *Server) runScript(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		args = append(args, "--params", req.Params)
+	}
+	switch req.Driver {
+	case "", "auto":
+	case "gvisor", "firecracker", "dev":
+		args = append(args, "--driver", req.Driver)
+	default:
+		bad("driver: auto, gvisor, firecracker or dev")
+		return
 	}
 	if req.RemoveOn {
 		args = append(args, "--rm")
