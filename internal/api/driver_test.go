@@ -20,8 +20,11 @@ func TestRunDriver(t *testing.T) {
 		b, _ := json.Marshal(map[string]string{"entry": entry, "driver": driver})
 		return string(b)
 	}
-	if w := request(h, "POST", "/api/run", testToken, body("docker")); w.Code != http.StatusBadRequest || !strings.Contains(w.Body.String(), "driver") {
-		t.Errorf("unknown driver: %d %s", w.Code, w.Body)
+	// A box needs a driver: none, "auto" and unknown ones are refused.
+	for _, d := range []string{"", "auto", "docker"} {
+		if w := request(h, "POST", "/api/run", testToken, body(d)); w.Code != http.StatusBadRequest || !strings.Contains(w.Body.String(), "driver") {
+			t.Errorf("driver %q: %d %s", d, w.Code, w.Body)
+		}
 	}
 	if w := request(h, "POST", "/api/run", testToken, body("gvisor")); w.Code == http.StatusBadRequest {
 		t.Errorf("gvisor rejected: %s", w.Body)

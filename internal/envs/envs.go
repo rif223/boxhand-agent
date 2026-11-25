@@ -33,7 +33,7 @@ type Env struct {
 // Drivers returns the drivers tsbox supports on this platform.
 func Drivers() []string {
 	if runtime.GOOS == "linux" {
-		return []string{"auto", "gvisor", "firecracker", "dev"}
+		return []string{"gvisor", "firecracker", "dev"}
 	}
 	return []string{"dev"}
 }
